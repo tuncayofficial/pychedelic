@@ -18,4 +18,5 @@ def save_60fps_video(manipulator, output_path="output_60fps.mp4"):
     for frame in manipulator.processed_frames:
         out.write(frame)
     out.release()
+
     print(f"✅ 60fps video saved: {output_path}")
