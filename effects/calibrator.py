@@ -8,7 +8,7 @@ import simpleaudio as sa
 class Calibrator:
     def __init__(self):
         self.frames = []
-        self.manipulated_frames = []
+        self.processed_frames = []
         self.complexity = []
         self.threshold = None
         self.start_time = time.time()
@@ -22,7 +22,7 @@ class Calibrator:
 
         if len(self.complexity) > 10 and self.threshold is None:
             self.threshold = np.median(self.complexity)
-            print(f"🎯 Complexity threshold set: {self.threshold:.2f}")
+            print("Current ColorChaosManipulator threshold has set to " + str(self.threshold))
 
     def calculate_complexity(self, frame):
         small = cv.resize(frame, (160, 90))
@@ -34,7 +34,8 @@ class Calibrator:
             cv.putText(frame, "CALIBRATING...", (50, 50), 
                   cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             return frame 
-            
+
+        self.processed_frames.append(frame)  
         complexity = self.calculate_complexity(frame)
         
         if complexity > self.threshold:

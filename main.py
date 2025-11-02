@@ -8,9 +8,10 @@ import simpleaudio as sa
 # Import classes
 
 from effects.calibrator import Calibrator
-from functions.save_video import save_60fps_video
+from effects.color_chaos_manipulator import ColorChaosManipulator
+from functions.export_video import export_video_global
 
-VIDEO_PATH = 'assets/video_1.mp4'
+VIDEO_PATH = 'assets/example.mp4'
 AUDIO_FILE = 'assets/worldwide.wav'
 
 capture = cv.VideoCapture(VIDEO_PATH)
@@ -22,12 +23,12 @@ def play_audio(audio_file):
     play_obj = wave_obj.play()
 
 calibrator = Calibrator()
+cc_manipulator = ColorChaosManipulator()
 
 apply_calibration = str(input("Apply calibration? Y or N : "))
 
 play_audio(AUDIO_FILE)
-
-save_60fps_video(calibrator, "worldwide_60fps.mp4")
+output_frames = []
 
 while True:
     isTrue, frame = capture.read()  
@@ -56,8 +57,14 @@ while True:
                     cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         
         calibrator.add_frame(frame)
-        processed_frame = calibrator.process_current_frame(frame)
-        cv.imshow("PROCESSED VIDEO WITH IMAGE CALIBRATION", processed_frame)
+        
+        for frame in calibrator.frames:
+            processed_calibrator_frame = calibrator.process_current_frame(frame)
+
+            complexity = cc_manipulator.calculate_complexity(frame)
+            for processed_calibrator_frame in calibrator.processed_frames:
+                output_frames.append(cc_manipulator.process_current_frame(processed_calibrator_frame, complexity))
+
 
     elif apply_calibration == "N" or apply_calibration == "n":
         cv.putText(frame, "TIME PASSED : " + str(round(elapsed_time, 2)) + " SECONDS", (50, 50), 
@@ -71,9 +78,12 @@ while True:
         cv.imshow("NORMAL VIDEO", frame)
     else :
         print("Undefined argument.")
-        break;
+        break
     if cv.waitKey(20) & 0xFF == ord('d'):
         break
 
 capture.release()
+
+export_video_global(output_frames, "ferhad.mp4")
+
 cv.destroyAllWindows()
