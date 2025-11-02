@@ -1,3 +1,10 @@
+import cv2 as cv
+import numpy as np
+import time
+import math
+import random
+import simpleaudio as sa
+
 def save_60fps_video(manipulator, output_path="output_60fps.mp4"):
     if not manipulator.manipulated_frames:
         print("No processed frames to save!")
