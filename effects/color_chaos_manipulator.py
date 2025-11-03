@@ -141,7 +141,7 @@ class ColorChaosManipulator:
             end_angle = angle_step // 2
 
             cv.ellipse(mask, (center_x, center_y), (w, h), 
-                  start_angle, 0, angle_step, 255, -1)
+                  start_angle, 0, end_angle, 255, -1)
         
             result[mask == 255] = rotated[mask == 255]
         return result
