@@ -118,7 +118,7 @@ def realtimeManipulation():
 
 
 def renderVideo():
-    ASSETS_PATH = '../assets/'
+    ASSETS_PATH = 'assets/'
     AUDIO_FILE = 'assets/worldwide.wav'
     FILENAME = "video_" + str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S")) + ".mp4"
     VIDEO_NAME_IO = input(str("Enter video name to process : "))
@@ -173,7 +173,7 @@ def renderVideo():
         total_time = time.time() - start_time
         print(f"✅ Processed {len(output_frames)} frames in {total_time:.2f}s")
         print(f"📹 Exporting at {len(output_frames)/total_time:.1f} fps...")
-        renderProcessor(output_frames, "../build/" + FILENAME, fps_cv)
+        renderProcessor(output_frames, "build/" + FILENAME, fps_cv)
         print("🎬 Video exported: " + FILENAME)
     else:
         print("❌ No frames processed!")
