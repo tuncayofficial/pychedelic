@@ -1,4 +1,4 @@
-# OpenCV Video Calibration & Psychedelic Effects
+# OpenCV Video Calibration
 
 A real-time video processing system that applies computer vision techniques and psychedelic effects using mathematical transformations. Transform your webcam feed into a trippy visual experience! 🌈✨
 
