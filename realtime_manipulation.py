@@ -26,16 +26,16 @@ FRAME_ORDER = 0
 
 while True:
     isTrue, frame = capture.read()  
-    elapsed_time = time.time() - calibrator.start_time
+    elapsed_time = time.time() - cc_manipulator.start_time
     fps_cv = capture.get(cv.CAP_PROP_FPS)
-    fps = len(calibrator.frames) // elapsed_time if elapsed_time > 0 else 0
-    complexity = calibrator.calculate_complexity(frame)
+    fps = len(cc_manipulator.frames) // elapsed_time if elapsed_time > 0 else 0
+    complexity = cc_manipulator.calculate_complexity(frame)
     
     if not isTrue: 
         break
     
     if apply_calibration == "Y" or apply_calibration == "y":
-        if calibrator.threshold is not None :
+        if cc_manipulator.threshold is not None :
             cv.putText(frame, "TIME PASSED : " + str(round(elapsed_time, 2)) + " SECONDS", (50, 50), 
                   cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             cv.putText(frame, "FPS : " + str(round(fps_cv, 2)), (50, 100), 
@@ -43,15 +43,15 @@ while True:
             cv.putText(frame, "COMPLEXITY : " + str(round(complexity, 2)), (50, 150), 
                   cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             
-            if complexity > calibrator.threshold :
+            if complexity > cc_manipulator.threshold :
                 cv.putText(frame, "CALIBRATED FRAME", (50, 200), 
                     cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             else :
                 cv.putText(frame, "UNPROCESSED FRAME", (50, 200), 
                     cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         
-        calibrator.add_frame(frame)
-        processed_calibrator_frame = calibrator.process_current_frame(frame)
+        cc_manipulator.add_frame(frame)
+        processed_calibrator_frame = cc_manipulator.process_current_frame(frame, complexity)
         print("Processed frame number " + str(FRAME_ORDER))
         cv.imshow("PROCESSED VIDEO", processed_calibrator_frame)
         FRAME_ORDER += 1

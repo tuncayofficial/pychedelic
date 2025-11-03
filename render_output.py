@@ -8,17 +8,17 @@ from effects.calibrator import Calibrator
 from effects.color_chaos_manipulator import ColorChaosManipulator
 from functions.export_video import export_video_global
 
-VIDEO_PATH = 'assets/video_1_trimmed.mp4'
+ASSETS_PATH = 'assets/'
 AUDIO_FILE = 'assets/worldwide.wav'
 FILENAME = "video_" + str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S")) + ".mp4"
+VIDEO_NAME_IO = input(str("Enter video name to process : "))
 
-capture = cv.VideoCapture(VIDEO_PATH)
+capture = cv.VideoCapture(ASSETS_PATH + VIDEO_NAME_IO + ".mp4")
 calibrator = Calibrator()
 cc_manipulator = ColorChaosManipulator()
 
 apply_calibration = str(input("Apply calibration? Y or N : "))
 
-#play_audio(AUDIO_FILE)
 output_frames = []
 
 print("⚡ Processing frames at MAXIMUM SPEED (no display)...")
@@ -35,21 +35,22 @@ while True:
     
     frame_count += 1
     
-    # Progress update every 30 frames
     if frame_count % 30 == 0:
         elapsed = time.time() - start_time
         fps = frame_count / elapsed if elapsed > 0 else 0
         print(f"📊 Processed {frame_count} frames ({fps:.1f} fps)")
     
-    complexity = calibrator.calculate_complexity(frame)
+    complexity = cc_manipulator.calculate_complexity(frame)
     
     if apply_calibration == "Y" or apply_calibration == "y":
         calibrator.add_frame(frame)
-        processed_frame = calibrator.process_current_frame(frame)
-        output_frames.append(processed_frame)
+        processed_calibrator_frame = calibrator.process_current_frame(frame)
+        cc_manipulator.add_frame(processed_calibrator_frame)
+        processed_cc_manipulator_frame = cc_manipulator.process_current_frame(processed_calibrator_frame, complexity)
+        output_frames.append(processed_cc_manipulator_frame)
         
     elif apply_calibration == "N" or apply_calibration == "n":
-        calibrator.add_frame(frame)
+        cc_manipulator.add_frame(frame)
         output_frames.append(frame)
         
     else:

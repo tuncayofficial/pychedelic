@@ -47,4 +47,4 @@ class Calibrator:
     
     def _simple_frame_effect(self, frame, complexity):
         alpha = 1.0 + math.sqrt((self.complexities.index(complexity)))
-        return cv.convertScaleAbs(frame, alpha=alpha, beta=10)
+        return cv.convertScaleAbs(frame, alpha=1.8, beta=10)

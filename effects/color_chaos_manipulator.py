@@ -1,7 +1,8 @@
 import cv2 as cv
-import sys
+import math
 import random
 import numpy as np
+import time
 
 class ColorChaosManipulator:
     def __init__(self):
@@ -11,6 +12,8 @@ class ColorChaosManipulator:
         self.threshold = None
         self.color_palettes = []
         self.effect_history = []
+        self.start_time = time.time()
+        
         self._generate_color_palettes()
 
     def _generate_color_palettes(self):
@@ -52,46 +55,120 @@ class ColorChaosManipulator:
         self.processed_frames.append(frame)  
         
         if complexity > self.threshold:
-            return self._color_blast(frame, complexity)
+            return self._complex_frame_effect(frame, complexity)
         else:
-            return self._channel_swap(frame)
+            return self.hue_shift(frame, 150)
         
     def _complex_frame_effect(self, frame, complexity):
-        """
         effect_type = random.choice([
-            'channel_swap', 'color_blast', 'neon_edges', 
-            'hue_shift', 'rgb_split', 'psychedelic'
+            'channel_swap', 'color_blast','psychedelic_master'
         ])
-        """
-
-        effect_type = "color_blast"
 
         match effect_type:
             case "channel_swap":
                 return self._channel_swap(frame)
             case "color_blast":
                 return self._color_blast(frame, complexity)
-            case "neon_edges":
-                return self._neon_edges(frame)
-            case "hue_shift":
-                return self._hue_shift(frame)
-            case "rgb_split":
-                return self._rgb_split(frame)
-            case "psychedelic":
-                return self._psychedelic(frame)
+            case "psychedelic_master":
+                return self._psychedelic_master(frame, time.time() - self.start_time)
     
     def _channel_swap(self, frame):
         b, g, r = cv.split(frame)
         channels = [b, g, r]
-        swapped_channels = random.shuffle(channels)
-        return swapped_channels
+        random.shuffle(channels)
+        return cv.merge(channels) 
     
     def _color_blast(self, frame, complexity):
-        intensity = min(0.8, complexity / (self.threshold * 2))
+        intensity = min(random.uniform(0.5, 2.5), complexity / (self.threshold * random.randint(1, 10)))
 
         color = [random.randint(0, 255) for _ in range(3)]
         overlay = np.full_like(frame, color)
 
-        print("Applying color blast...")
-
         return cv.addWeighted(frame, 1 - intensity, overlay, intensity, 0)
+    
+
+    # Defining Psychedelic concepts from here
+
+    def hue_shift(self, frame, shift_amount):
+        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+
+        hue_channel = hsv[:, :, 0]
+        
+        hue_channel_int = hue_channel.astype(np.int32)
+        new_hue = (hue_channel_int + shift_amount) % 180
+        
+        hsv[:, :, 0] = new_hue.astype(np.uint8)
+
+        return cv.cvtColor(hsv, cv.COLOR_HSV2BGR)
+    
+    def sine_distortion(self, frame, time, wave_strength=10):
+        h, w = frame.shape[:2]
+        result = np.zeros_like(frame)
+
+        frequency = random.uniform(0, 1)
+
+        for y in range(h):
+            for x in range(w):
+                wave_x = math.sin(y * frequency + time) * wave_strength
+                wave_y = math.cos(x * frequency + time) * wave_strength
+
+                new_x = int(x + wave_x)
+                new_y = int(y + wave_y)
+
+                new_x = max(0, min(w-1, new_x))
+                new_y = max(0, min(h-1, new_y)) 
+
+                result[y, x] = frame[new_y, new_x]
+
+        return result
+    
+    def rgb_split(self, frame, offset):
+        b, g, r = cv.split(frame)
+
+        b_shifted = np.roll(b, offset, axis=1)
+        g_shifted = np.roll(g, 0, axis=1)
+        r_shifted = np.roll(b, -offset, axis=1)
+
+        return cv.merge([b_shifted, g_shifted, r_shifted])
+    
+    def kaleidoscope(self, frame, num_segments=6):
+        h, w = frame.shape[:2]
+        center_x, center_y = w // 2, h // 2
+
+        result = np.zeros_like(frame)
+
+        angle_step = 360 // num_segments
+
+        for segment in range(num_segments):
+            angle = segment * angle_step
+
+            rotation_matrix = cv.getRotationMatrix2D((center_x, center_y), angle, 1.0)
+            rotated = cv.warpAffine(frame, rotation_matrix, (w, h))
+
+            mask = np.zeros((h,w), dtype=np.uint8)
+            start_angle = -angle_step // 2
+            end_angle = angle_step // 2
+
+            cv.ellipse(mask, (center_x, center_y), (w, h), 
+                  start_angle, 0, angle_step, 255, -1)
+        
+            result[mask == 255] = rotated[mask == 255]
+        return result
+    
+    def _psychedelic_master(self, frame, time_counter):
+        result = frame.copy()
+
+        shift_amount = int(math.sin(time_counter * 0.1) * 30)
+        result = self.hue_shift(result, shift_amount) 
+        
+        wave_strength = 5 + 3 * math.sin(time_counter * 0.05) 
+        result = self.sine_distortion(result, time_counter * 0.5)
+        
+        split_amount = int(2 + math.sin(time_counter * 0.2) * 3) 
+        result = self.rgb_split(result, split_amount)
+        
+        if int(time_counter) % 120 == 0: 
+            segments = random.choice([4, 6, 8])
+            result = self.kaleidoscope(result, segments)
+        
+        return result
