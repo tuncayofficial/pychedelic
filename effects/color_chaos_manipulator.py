@@ -79,7 +79,7 @@ class ColorChaosManipulator:
         return cv.merge(channels) 
     
     def _color_blast(self, frame, complexity):
-        intensity = min(random.uniform(0.5, 2.5), complexity / (self.threshold * random.randint(1, 10)))
+        intensity = min(0.3, complexity / (self.threshold * 8))
 
         color = [random.randint(0, 255) for _ in range(3)]
         overlay = np.full_like(frame, color)
