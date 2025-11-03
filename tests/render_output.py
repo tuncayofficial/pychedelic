@@ -2,13 +2,17 @@ import cv2 as cv
 import numpy as np
 import time
 from datetime import datetime
+import sys
+import os 
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import classes
 from effects.calibrator import Calibrator
 from effects.color_chaos_manipulator import ColorChaosManipulator
 from functions.export_video import export_video_global
 
-ASSETS_PATH = 'assets/'
+ASSETS_PATH = '../assets/'
 AUDIO_FILE = 'assets/worldwide.wav'
 FILENAME = "video_" + str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S")) + ".mp4"
 VIDEO_NAME_IO = input(str("Enter video name to process : "))
@@ -63,7 +67,7 @@ if output_frames:
     total_time = time.time() - start_time
     print(f"✅ Processed {len(output_frames)} frames in {total_time:.2f}s")
     print(f"📹 Exporting at {len(output_frames)/total_time:.1f} fps...")
-    export_video_global(output_frames, "build/" + FILENAME, fps_cv)
+    export_video_global(output_frames, "../build/" + FILENAME, fps_cv)
     print("🎬 Video exported: " + FILENAME)
 else:
     print("❌ No frames processed!")

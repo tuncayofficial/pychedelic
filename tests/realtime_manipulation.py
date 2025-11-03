@@ -1,7 +1,10 @@
 import cv2 as cv
 import numpy as np
 import time
+import os 
+import sys
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import classes
 
 from effects.calibrator import Calibrator
