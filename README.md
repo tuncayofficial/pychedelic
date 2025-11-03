@@ -29,3 +29,37 @@ Dynamic Thresholding
 self.threshold = np.median(self.complexities)
 ```
 Statistical Method: Uses median of recent frame complexities to adapt to different lighting conditions without being affected by outliers.
+
+## 🚀 Installation
+In order to use the library, you need to clone the repository :
+
+```bash
+# Clone the repository
+git clone https://github.com/tuncayofficial/opencv_video_calibration.git
+
+# Navigate to project directory
+cd opencv_video_calibration
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+## 🎯 Quick Start
+### Real-Time Video Processing 🎥
+```bash
+python main.py -rtm enable
+```
+_Process video files with live preview and real-time effects!_
+
+### Video Rendering & Export 🎬
+```bash
+python main.py -render enable
+```
+_Render video files with mathematical transformations and export results_
+
+## 🔮 Coming Soon
+• Webcam Support - Live camera feed processing
+
+• More Effects - Expanded mathematical transformations
+
+• Audio Integration - Enhanced audio-video synchronization
