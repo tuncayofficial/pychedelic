@@ -15,14 +15,14 @@ from scripts.realtimeManipulation import realtimeManipulation
 # ---------------------- Argument parser implementation below here ----------------------
 
 
-parser = argparse.ArgumentParser(description="🎨 OpenCV Visual Artifacts - Transform your videos with psychedelic effects and mathematical transformations! 🌈✨",
+parser = argparse.ArgumentParser(description="OpenCV Visual Artifacts - Transform your videos with psychedelic effects and mathematical transformations! 🌈✨",
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog="""
 🌟 Examples:
-  python main.py -rtm enable          🎥 Live webcam psychedelic effects
-  python main.py -render enable       🎬 Process video files with visual artifacts
+  python main.py -rtm enable          Live webcam psychedelic effects
+  python main.py -render enable       Process video files with visual artifacts
   
-🎯 Features:
+    Features:
   • Real-time complexity analysis
   • Dynamic effect triggering  
   • Psychedelic color transformations
@@ -33,21 +33,21 @@ parser.add_argument(
     "-rtm", "--realtime", 
     type=str,
     choices=['enable'],
-    help="🎥 Enable realtime manipulation mode (webcam required)"
+    help="Enable realtime manipulation mode (webcam required)"
 )
 
 parser.add_argument(
     "-render", "--render", 
     type=str,
     choices=['enable'], 
-    help="🎬 Render video files with visual artifacts"
+    help="Render video files with visual artifacts"
 )
 
 parser.add_argument(
     "-effects", "--effects", 
     nargs='+',
     choices=['Calibrator','ColorChaosManipulator', 'VHS'], 
-    help="🎬 Choose effects to be applied"
+    help="Choose effects to be applied"
 )
 
 args = parser.parse_args()
