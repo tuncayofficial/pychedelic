@@ -22,9 +22,10 @@ class Calibrator:
             print("Current Calibrator threshold has set to " + str(self.threshold))
 
     def calculate_complexity(self, frame):
-        small = cv.resize(frame, (160, 90))
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        return np.var(gray)
+        variance = np.var(gray)
+
+        return np.log1p(variance)
 
     def process_current_frame(self, frame):
         if self.threshold is None:  

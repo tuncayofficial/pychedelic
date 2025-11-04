@@ -9,6 +9,9 @@ from effects.calibrator import Calibrator
 from effects.color_chaos_manipulator import ColorChaosManipulator
 from functions.render_processor import renderProcessor
 
+from scripts.renderVideo import renderVideo
+from scripts.realtimeManipulation import realtimeManipulation
+
 # ---------------------- Argument parser implementation below here ----------------------
 
 
@@ -43,7 +46,7 @@ parser.add_argument(
 parser.add_argument(
     "-effects", "--effects", 
     nargs='+',
-    choices=['Calibrator','ColorChaosManipulator'], 
+    choices=['Calibrator','ColorChaosManipulator', 'VHS'], 
     help="🎬 Choose effects to be applied"
 )
 
@@ -56,155 +59,12 @@ cc_manipulator = ColorChaosManipulator()
 
 # ---------------------- Implementations of tests below here ----------------------
 
-def realtimeManipulation():
-    ASSETS_PATH = 'assets/'
-
-    # Functions
-    calibrator = Calibrator()
-    cc_manipulator = ColorChaosManipulator()
-
-    # I/O
-    VIDEO_NAME_IO= str(input("Choose the video to process : "))
-    VIDEO_PATH = ASSETS_PATH + VIDEO_NAME_IO + ".mp4"
-
-    capture = cv.VideoCapture(VIDEO_PATH)
-    output_frames = []
-    FRAME_ORDER = 0
-
-    while True:
-        isTrue, frame = capture.read()  
-        elapsed_time = time.time() - cc_manipulator.start_time
-        fps_cv = capture.get(cv.CAP_PROP_FPS)
-        fps = len(cc_manipulator.frames) // elapsed_time if elapsed_time > 0 else 0
-
-        
-        if not isTrue: 
-            break
-        
-        if hasattr(args, "effects") and "ColorChaosManipulator" in args.effects:
-
-            complexity = cc_manipulator.calculate_complexity(frame)
-
-            if cc_manipulator.threshold is not None :
-                cv.putText(frame, "TIME PASSED : " + str(round(elapsed_time, 2)) + " SECONDS", (50, 50), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "FPS : " + str(round(fps_cv, 2)), (50, 100), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "COMPLEXITY : " + str(round(complexity, 2)), (50, 150), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                
-                if complexity > cc_manipulator.threshold :
-                    cv.putText(frame, "CALIBRATED FRAME", (50, 200), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                else :
-                    cv.putText(frame, "UNPROCESSED FRAME", (50, 200), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            
-            cc_manipulator.add_frame(frame)
-            processed_cc_manipulator_frame = cc_manipulator.process_current_frame(frame, complexity)
-            print("Processed frame number " + str(FRAME_ORDER))
-            cv.imshow("PROCESSED VIDEO", processed_cc_manipulator_frame)
-            FRAME_ORDER += 1
-
-        elif hasattr(args, "effects") and "Calibrator" in args.effects:
-
-            complexity = calibrator.calculate_complexity(frame)
-
-            if calibrator.threshold is not None :
-                cv.putText(frame, "TIME PASSED : " + str(round(elapsed_time, 2)) + " SECONDS", (50, 50), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "FPS : " + str(round(fps_cv, 2)), (50, 100), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "COMPLEXITY : " + str(round(complexity, 2)), (50, 150), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                
-                if complexity > calibrator.threshold :
-                    cv.putText(frame, "CALIBRATED FRAME", (50, 200), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                else :
-                    cv.putText(frame, "UNPROCESSED FRAME", (50, 200), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            
-            calibrator.add_frame(frame)
-            processed_calibrator_frame = calibrator.process_current_frame(frame)
-            print("Processed frame number " + str(FRAME_ORDER))
-            cv.imshow("PROCESSED VIDEO", processed_calibrator_frame)
-            FRAME_ORDER += 1
-        else :
-            print("Undefined argument.")
-            break
-        if cv.waitKey(20) & 0xFF == ord('d'):
-            break
-
-    cv.destroyAllWindows()
-
-
-def renderVideo():
-    ASSETS_PATH = 'assets/'
-    FILENAME = "video_" + str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S")) + ".mp4"
-    VIDEO_NAME_IO = input(str("Enter video name to process : "))
-
-    capture = cv.VideoCapture(ASSETS_PATH + VIDEO_NAME_IO + ".mp4")
-    calibrator = Calibrator()
-    cc_manipulator = ColorChaosManipulator()
-
-    output_frames = []
-
-    print("⚡ Processing frames at MAXIMUM SPEED (no display)...")
-
-    frame_count = 0
-    start_time = time.time()
-
-    while True:
-        isTrue, frame = capture.read()  
-        fps_cv = capture.get(cv.CAP_PROP_FPS)
-
-        if not isTrue: 
-            break
-        
-        frame_count += 1
-        
-        if frame_count % 30 == 0:
-            elapsed = time.time() - start_time
-            fps = frame_count / elapsed if elapsed > 0 else 0
-            print(f"📊 Processed {frame_count} frames ({fps:.1f} fps)")
-        
-        if hasattr(args, "effects") and "Calibrator" in args.effects:
-            complexity = calibrator.calculate_complexity(frame)
-
-            calibrator.add_frame(frame)
-            processed_calibrator_frame = calibrator.process_current_frame(frame)
-            output_frames.append(processed_calibrator_frame)
-            
-        if hasattr(args, "effects") and "ColorChaosManipulator" in args.effects:
-            complexity = cc_manipulator.calculate_complexity(frame)
-
-            cc_manipulator.add_frame(frame)
-            processed_cc_manipulator_frame = cc_manipulator.process_current_frame(frame, complexity)
-            output_frames.append(processed_cc_manipulator_frame)
-            
-        else:
-            print("Undefined argument.")
-            break
-
-    capture.release()
-
-    if output_frames:
-        total_time = time.time() - start_time
-        print(f"✅ Processed {len(output_frames)} frames in {total_time:.2f}s")
-        print(f"📹 Exporting at {len(output_frames)/total_time:.1f} fps...")
-        renderProcessor(output_frames, "build/" + FILENAME, fps_cv)
-        print("🎬 Video exported: " + FILENAME)
-    else:
-        print("❌ No frames processed!")
-
-    print(f"🎉 Done! Open {FILENAME} to see your masterpiece!")
 
 # ---------------------- Parsing args below here ----------------------
 
 if hasattr(args, "realtime") and args.realtime == "enable":
-    realtimeManipulation()
+    realtimeManipulation(args)
 elif hasattr(args, "render") and args.render == "enable":
-    renderVideo()
+    renderVideo(args)
 else :
     print("Undefined argument!")

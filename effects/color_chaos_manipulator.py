@@ -33,7 +33,9 @@ class ColorChaosManipulator:
 
     def calculate_complexity(self, frame):
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        return np.var(gray)
+        variance = np.var(gray)
+
+        return np.log1p(variance)
     
     def add_frame(self, frame):
         self.frames.append(frame)
