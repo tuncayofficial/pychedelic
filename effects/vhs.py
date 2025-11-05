@@ -43,16 +43,16 @@ class VHS:
         if complexity > self.threshold:
             return self._apply_vhs(frame)
         else:
-            return self._vhs_head_clog(frame)
+            return self._vhs_scan_lines(frame)
         
 
-    def _scan_lines(self, frame):
+    def _vhs_scan_lines(self, frame):
         dark_lines = frame[::2, :] * 0.2
         dark_lines[:, :, 0] = dark_lines[:, :, 0] * 1.5
         frame[::2, :] = dark_lines
         return frame
 
-    def _color_bleeding(self, frame):
+    def _vhs_color_bleeding(self, frame):
         b, g, r = cv.split(frame)
         h, w = r.shape
 
@@ -100,7 +100,6 @@ class VHS:
         return frame
     
     def _vhs_head_clog(self, frame):
-        h, w = frame.shape[:2]
         current_index = len(self.processed_frames)
     
         if current_index > 0 and random.random() < 0.8:
@@ -108,15 +107,13 @@ class VHS:
             
             mix_ratio = random.uniform(0.3, 0.8)
             frame = cv.addWeighted(frame, 1-mix_ratio, previous_frame, mix_ratio, 0)
-            
-            cv.putText(frame, "HEAD CLOG!", (50, 500), 
-                    cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
         
         return frame
 
     def _apply_vhs(self, frame):
-        frame = self._scan_lines(frame)
-        frame = self._color_bleeding(frame)
+        frame = self._vhs_scan_lines(frame)
+        frame = self._vhs_color_bleeding(frame)
         frame = self._vhs_noise(frame)
+        frame = self._vhs_head_clog(frame)
 
         return frame  
