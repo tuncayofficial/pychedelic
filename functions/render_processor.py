@@ -19,5 +19,4 @@ def renderProcessor(frames, output_path, fps):
             print(f"📦 Frame {i}/{len(frames)}")
     
     out.release()
-    print(f"✅ Video exported: {output_path}")
     return True

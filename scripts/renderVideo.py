@@ -2,6 +2,7 @@ import cv2 as cv
 import argparse
 import time
 import subprocess
+import os
 import sys
 from datetime import datetime
 
@@ -16,6 +17,11 @@ from functions.render_processor import renderProcessor
 def renderVideo(args):
     ASSETS_PATH = 'assets/'
     FILENAME = "video_" + str(datetime.now().strftime("%Y_%m_%d_%H_%M_%S")) + ".mp4"
+
+    entries = os.listdir(ASSETS_PATH)
+    files = [entry for entry in entries if os.path.isfile(os.path.join(ASSETS_PATH, entry))]
+    print("Files to be processed in assets folder : " + str(files))
+
     VIDEO_NAME_IO = input(str("Enter video name to process : "))
 
     capture = cv.VideoCapture(ASSETS_PATH + VIDEO_NAME_IO + ".mp4")

@@ -3,6 +3,7 @@ import argparse
 import time
 import subprocess
 import sys
+import os
 from datetime import datetime
 
 from effects.calibrator import Calibrator
@@ -18,6 +19,10 @@ def realtimeManipulation(args):
     calibrator = Calibrator()
     cc_manipulator = ColorChaosManipulator()
     vhs = VHS()
+
+    entries = os.listdir(ASSETS_PATH)
+    files = [entry for entry in entries if os.path.isfile(os.path.join(ASSETS_PATH, entry))]
+    print("Files to be processed in assets folder : " + str(files))
 
     # I/O
     VIDEO_NAME_IO= str(input("Choose the video to process : "))
