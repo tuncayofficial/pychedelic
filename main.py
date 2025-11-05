@@ -7,7 +7,7 @@ from datetime import datetime
 
 from effects.calibrator import Calibrator
 from effects.color_chaos_manipulator import ColorChaosManipulator
-from functions.render_processor import renderProcessor
+from processors.render_processor import RenderProcessor
 
 from scripts.renderVideo import renderVideo
 from scripts.realtimeManipulation import realtimeManipulation
