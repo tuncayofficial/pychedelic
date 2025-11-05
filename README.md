@@ -88,9 +88,7 @@ _Process video files with live preview and real-time effects!_
 
 ## Example videos
 
-![mvclip_channel_shift](https://github.com/user-attachments/assets/b210cc5a-a4c0-4dee-8695-673045d5bc4d)
-
-![artifact_color_chaos (1)](https://github.com/user-attachments/assets/6edd7aa5-6124-4fba-ac6e-70fd887293e6)
+![mvclip_channel_shift](https://github.com/user-attachments/assets/b210cc5a-a4c0-4dee-8695-673045d5bc4d) ![artifact_color_chaos (1)](https://github.com/user-attachments/assets/6edd7aa5-6124-4fba-ac6e-70fd887293e6)
 
 ### Video Rendering & Export
 ```bash
