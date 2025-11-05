@@ -58,21 +58,24 @@ def renderVideo(args):
 
                 calibrator.add_frame(frame)
                 processed_calibrator_frame = calibrator.process_current_frame(frame)
-                output_frames.append(processed_calibrator_frame)
+                rgb_frame = cv.cvtColor(processed_calibrator_frame, cv.COLOR_BGR2RGB)
+                output_frames.append(rgb_frame)
             
             elif "ColorChaosManipulator" in args.effects:
                 complexity = cc_manipulator.calculate_complexity(frame)
 
                 cc_manipulator.add_frame(frame)
                 processed_cc_manipulator_frame = cc_manipulator.process_current_frame(frame, complexity)
-                output_frames.append(processed_cc_manipulator_frame)
+                rgb_frame = cv.cvtColor(processed_cc_manipulator_frame, cv.COLOR_BGR2RGB)
+                output_frames.append(rgb_frame)
 
             elif "VHS" in args.effects:
                 complexity = vhs.calculate_complexity(frame)
 
                 vhs.add_frame(frame)
                 processed_vhs_frame = vhs.process_current_frame(frame, complexity)
-                output_frames.append(processed_vhs_frame)
+                rgb_frame = cv.cvtColor(processed_vhs_frame, cv.COLOR_BGR2RGB)
+                output_frames.append(rgb_frame)
         else:
             print("Undefined argument.")
             break
