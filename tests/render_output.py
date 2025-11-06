@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from effects.tracker import Tracker
 from effects.color_chaos_manipulator import ColorChaosManipulator
 from processors.render_processor import RenderProcessor
+from effects.effect_manager import EffectManager
 
 ASSETS_PATH = '../assets/'
 AUDIO_FILE = 'assets/worldwide.wav'
@@ -23,6 +24,8 @@ tracker = Tracker()
 cc_manipulator = ColorChaosManipulator()
 
 renderProcessor = RenderProcessor()
+
+effectManager = EffectManager()
 
 apply_calibration = str(input("Apply calibration? Y or N : "))
 
@@ -61,6 +64,12 @@ while True:
     else:
         print("Undefined argument.")
         break
+    active_effect = effectManager.get_active_effect()
+
+    complexity = active_effect.calculate_complexity(frame)
+    active_effect.add_frame(frame)
+
+    processed_frame = effectManager.process_frame(frame, complexity)
 
 capture.release()
 

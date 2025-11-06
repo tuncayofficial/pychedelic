@@ -11,6 +11,8 @@ from effects.tracker import Tracker
 from effects.color_chaos_manipulator import ColorChaosManipulator
 from effects.vhs import VHS
 
+from effects.effect_manager import EffectManager
+
 # ------------------- Importing functions from here -------------------
 from processors.render_processor import RenderProcessor
 
@@ -30,6 +32,8 @@ def renderVideo(args):
     tracker = Tracker()
     cc_manipulator = ColorChaosManipulator()
     vhs = VHS()
+
+    effectManager = EffectManager()
 
     # ------------------- Initialize processors from here -------------------
     renderProcessor = RenderProcessor()
@@ -58,31 +62,24 @@ def renderVideo(args):
         
         if hasattr(args, "effects"):
             if "Tracker" in args.effects:
-                complexity = tracker.calculate_complexity(frame)
-
-                tracker.add_frame(frame)
-                processed_tracker_frame = tracker.process_current_frame(frame)
-                rgb_frame = cv.cvtColor(processed_tracker_frame, cv.COLOR_BGR2RGB)
-                output_frames.append(processed_tracker_frame)
+                effectManager.set_effect("tracker")
             
             elif "ColorChaosManipulator" in args.effects:
-                complexity = cc_manipulator.calculate_complexity(frame)
-
-                cc_manipulator.add_frame(frame)
-                processed_cc_manipulator_frame = cc_manipulator.process_current_frame(frame, complexity)
-                rgb_frame = cv.cvtColor(processed_cc_manipulator_frame, cv.COLOR_BGR2RGB)
-                output_frames.append(processed_cc_manipulator_frame)
+                effectManager.set_effect("color_chaos")
 
             elif "VHS" in args.effects:
-                complexity = vhs.calculate_complexity(frame)
-
-                vhs.add_frame(frame)
-                processed_vhs_frame = vhs.process_current_frame(frame, complexity)
-                rgb_frame = cv.cvtColor(processed_vhs_frame, cv.COLOR_BGR2RGB)
-                output_frames.append(processed_vhs_frame)
+                effectManager.set_effect("vhs")
         else:
             print("Undefined argument.")
             break
+        
+        active_effect = effectManager.get_active_effect()
+
+        complexity = active_effect.calculate_complexity(frame)
+        active_effect.add_frame(frame)
+
+        processed_frame = effectManager.process_frame(frame, complexity)
+        output_frames.append(processed_frame)
 
     capture.release()
 

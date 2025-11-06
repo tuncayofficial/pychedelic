@@ -10,6 +10,8 @@ from effects.tracker import Tracker
 from effects.color_chaos_manipulator import ColorChaosManipulator
 from effects.vhs import VHS
 
+from effects.effect_manager import EffectManager
+
 from processors.render_processor import RenderProcessor
 
 def realtimeManipulation(args):
@@ -19,6 +21,8 @@ def realtimeManipulation(args):
     tracker = Tracker()
     cc_manipulator = ColorChaosManipulator()
     vhs = VHS()
+
+    effectManager = EffectManager()
 
     entries = os.listdir(ASSETS_PATH)
     files = [entry for entry in entries if os.path.isfile(os.path.join(ASSETS_PATH, entry))]
@@ -32,101 +36,59 @@ def realtimeManipulation(args):
     output_frames = []
     FRAME_ORDER = 0
 
+    if hasattr(args, "effects"):
+        if "Tracker" in args.effects:
+            effectManager.set_effect("tracker")
+        elif "ColorChaosManipulator" in args.effects:
+            effectManager.set_effect("cc_manipulator")
+        elif "VHS" in args.effects:
+            effectManager.set_effect("vhs")
+        else:
+            print("No effect specified!")
+            return
+        
     while True:
-        isTrue, frame = capture.read()  
-        elapsed_time = time.time() - cc_manipulator.start_time
+
+        ret, frame = capture.read()
+
+        if not ret:
+            break
+
+        active_effect = effectManager.get_active_effect()
+
+        complexity = active_effect.calculate_complexity(frame)
+        active_effect.add_frame(frame)
+
+        processed_frame = effectManager.process_frame(frame, complexity)
+
+        elapsed_time = time.time() - active_effect.start_time
         fps_cv = capture.get(cv.CAP_PROP_FPS)
-        fps = len(cc_manipulator.frames) // elapsed_time if elapsed_time > 0 else 0
+        fps = len(active_effect.frames) // elapsed_time if elapsed_time > 0 else 0
 
-        if not isTrue: 
-            break
+        cv.putText(processed_frame, "TIME PASSED : " + str(round(elapsed_time, 2)) + " SECONDS", (50, 50), 
+            cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv.putText(processed_frame, "FPS : " + str(round(fps_cv, 2)), (50, 100), 
+            cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv.putText(processed_frame, "COMPLEXITY : " + str(round(complexity, 2)), (50, 150), 
+            cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         
-        if hasattr(args, "effects") and "ColorChaosManipulator" in args.effects:
-            complexity = cc_manipulator.calculate_complexity(frame)
-
-            if cc_manipulator.threshold is not None :
-                cv.putText(frame, "TIME PASSED : " + str(round(elapsed_time, 2)) + " SECONDS", (50, 50), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "FPS : " + str(round(fps_cv, 2)), (50, 100), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "COMPLEXITY : " + str(round(complexity, 2)), (50, 150), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "THRESHOLD : " + str(round(cc_manipulator.threshold, 2)), (50, 200), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "VHS EFFECT", (50, 350), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-                
-                if complexity > cc_manipulator.threshold :
-                    cv.putText(frame, "CALIBRATED FRAME", (50, 300), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                else :
-                    cv.putText(frame, "UNPROCESSED FRAME", (50, 300), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        if active_effect.threshold is not None:
+            cv.putText(processed_frame, "THRESHOLD : " + str(round(active_effect.threshold, 2)), (50, 200), 
+                cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             
-            cc_manipulator.add_frame(frame)
-            processed_cc_manipulator_frame = cc_manipulator.process_current_frame(frame, complexity)
-            print("Processed frame number " + str(FRAME_ORDER))
-            cv.imshow("PROCESSED VIDEO", processed_cc_manipulator_frame)
-            FRAME_ORDER += 1
+            if complexity > active_effect.threshold:
+                cv.putText(processed_frame, "CALIBRATED FRAME", (50, 300), 
+                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            else:
+                cv.putText(processed_frame, "UNPROCESSED FRAME", (50, 300), 
+                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-        elif hasattr(args, "effects") and "Tracker" in args.effects:
-            complexity = tracker.calculate_complexity(frame)
+        cv.putText(processed_frame, f"EFFECT: {effectManager.effect_history[-1].name}", (50, 350), 
+            cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
-            if tracker.threshold is not None :
-                cv.putText(frame, "TIME PASSED : " + str(round(elapsed_time, 2)) + " SECONDS", (50, 50), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "FPS : " + str(round(fps_cv, 2)), (50, 100), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "COMPLEXITY : " + str(round(complexity, 2)), (50, 150), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "THRESHOLD : " + str(round(tracker.threshold, 2)), (50, 200), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "VHS EFFECT", (50, 350), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-                
-                if complexity > tracker.threshold :
-                    cv.putText(frame, "CALIBRATED FRAME", (50, 300), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                else :
-                    cv.putText(frame, "UNPROCESSED FRAME", (50, 300), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        
-            tracker.add_frame(frame)
-            processed_tracker_frame = tracker.process_current_frame(frame)
-            print("Processed frame number " + str(FRAME_ORDER))
-            cv.imshow("PROCESSED VIDEO", processed_tracker_frame)
-            FRAME_ORDER += 1
-
-        elif hasattr(args, "effects") and "VHS" in args.effects:
-            complexity = vhs.calculate_complexity(frame)
-
-            if vhs.threshold is not None :
-                cv.putText(frame, "TIME PASSED : " + str(round(elapsed_time, 2)) + " SECONDS", (50, 50), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "FPS : " + str(round(fps_cv, 2)), (50, 100), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "COMPLEXITY : " + str(round(complexity, 2)), (50, 150), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "THRESHOLD : " + str(round(vhs.threshold, 2)), (50, 200), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-                cv.putText(frame, "VHS EFFECT", (50, 350), 
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
-                
-                if complexity > vhs.threshold :
-                    cv.putText(frame, "CALIBRATED FRAME", (50, 300), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-                else :
-                    cv.putText(frame, "UNPROCESSED FRAME", (50, 300), 
-                        cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            
-            vhs.add_frame(frame)
-            processed_vhs_frame = vhs.process_current_frame(frame, complexity)
-            print("Processed frame number " + str(FRAME_ORDER))
-            cv.imshow("PROCESSED VIDEO", processed_vhs_frame)
-            FRAME_ORDER += 1
-        else :
-            print("Undefined argument.")
-            break
+        print("Processed frame number " + str(FRAME_ORDER))
+        cv.imshow("PROCESSED VIDEO", processed_frame)
+        FRAME_ORDER += 1
 
         key = cv.waitKey(10) & 0xFF
         if key == ord('d'):
@@ -134,3 +96,4 @@ def realtimeManipulation(args):
             break
 
     cv.destroyAllWindows()
+        

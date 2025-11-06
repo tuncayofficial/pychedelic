@@ -16,7 +16,7 @@ class AudioProcessor:
         self.spectral_centroid = 0
 
         self.effect_multipliers = {
-            'color_blast': 1.0,
+            'color_blast': 3.0,
             'hue_shift': 1.0, 
-            'distortion': 1.0
+            'sine_distortion': 1.0
         }

@@ -6,10 +6,14 @@ import random
 
 class Tracker:
     def __init__(self):
+        self.name = "Tracker Effect"
+
         self.frames = []
         self.processed_frames = []
+
         self.complexities = []
         self.threshold = None
+
         self.start_time = time.time()
 
     def add_frame(self, frame):
@@ -27,7 +31,7 @@ class Tracker:
 
         return np.log1p(variance)
 
-    def process_current_frame(self, frame):
+    def process_current_frame(self, frame, complexity):
         if self.threshold is None:  
             cv.putText(frame, "CALIBRATING...", (50, 50), 
                   cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)

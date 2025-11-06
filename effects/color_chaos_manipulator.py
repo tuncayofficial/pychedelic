@@ -6,12 +6,17 @@ import time
 
 class ColorChaosManipulator:
     def __init__(self):
+        self.name = "ColorChaos Effect"
+
         self.frames = []
         self.processed_frames = []
+
         self.complexities = []
         self.threshold = None
+
         self.color_palettes = []
         self.effect_history = []
+
         self.start_time = time.time()
         
         self._generate_color_palettes()
