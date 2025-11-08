@@ -31,40 +31,26 @@ parser = argparse.ArgumentParser(description="OpenCV Visual Artifacts - Transfor
     """)
 
 parser.add_argument(
-    "-rtm", "--realtime", 
+    "-mode", "--mode", 
     type=str,
-    choices=['enable'],
-    help="Enable realtime manipulation mode (webcam required)"
-)
-
-parser.add_argument(
-    "-render", "--render", 
-    type=str,
-    choices=['enable'], 
-    help="Render video files with visual artifacts"
-)
-
-parser.add_argument(
-    "-webcam", "--webcam", 
-    type=str,
-    choices=['enable'], 
-    help="Show webcam with visual artifacts"
+    choices=['render','rtm','webcam'],
+    help="Sets the mode to specified argument"
 )
 
 parser.add_argument(
     "-effects", "--effects", 
     nargs='+',
     choices=['Tracker','ColorChaos', 'VHS',"NightVision","FacialArtifacts"], 
-    help="Choose effects to be applied"
+    help="Chooses effects to be applied"
 )
 
 args = parser.parse_args()
 
-if hasattr(args, "realtime") and args.realtime == "enable":
+if hasattr(args, "mode") and args.mode == "rtm":
     realtimeManipulation(args)
-elif hasattr(args, "render") and args.render == "enable":
+elif hasattr(args, "mode") and args.mode == "render":
     renderVideo(args)
-elif hasattr(args, "webcam") and args.webcam == "enable":
+elif hasattr(args, "webcam") and args.mode == "webcam":
     webcamManipulation(args)
 else :
     print("Undefined argument!")

@@ -37,9 +37,42 @@ class NightVision:
             return frame 
         
         if complexity > self.threshold:
-            return self._apply_night_vision_look(frame)
+            return self._apply_night_vision(frame)
         else:
-            return self._artifacts_enabled(frame)
+            return self._apply_night_vision(frame)
 
-        def _apply_night_vision_look():
-            return 0
+    def _night_vision_overlay(self, frame):
+        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        gray = cv.GaussianBlur(gray, (3, 3), 0)
+        gray = cv.equalizeHist(gray)
+
+        night_vision = cv.cvtColor(gray, cv.COLOR_GRAY2BGR)
+
+        night_vision[:, :, 0] = 0
+        night_vision[:, :, 2] = 0
+
+        h, w = night_vision.shape[:2]
+        kernel_x = cv.getGaussianKernel(w, w/3)
+        kernel_y = cv.getGaussianKernel(h, h/3)
+        kernel = kernel_y * kernel_x.T
+        mask = kernel / kernel.max()
+
+        night_vision = night_vision.astype(np.float32)
+        night_vision *= mask[..., np.newaxis]
+        night_vision = np.clip(night_vision, 0, 255).astype(np.uint8)
+
+        return night_vision
+    
+    def _scan_lines(self, frame):
+        result_frame = frame.copy().astype(np.float32)
+
+        result_frame[::3, :, 0] *= 1.5
+        result_frame[::3, :] *= 0.7
+        
+        return np.clip(result_frame.astype(np.uint8), 0, 255)
+    
+    def _apply_night_vision(self, frame):
+        frame = self._night_vision_overlay(frame)
+        frame = self._scan_lines(frame)
+
+        return frame

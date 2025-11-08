@@ -38,14 +38,22 @@ class FacialArtifacts:
 
         return np.log1p(variance)
 
-    def blur(self, frame):
-        self.name = "Blur effect"
-        faces = faceDetector.detect(frame)
+    def face_blur(self, frame):
+        self.name = "Face blur effect"
+        faces = faceDetector.detect_face(frame)
         result_frame = frame.copy()
 
         for (x,y,h,w) in faces:    
-            first_pixel = frame[y, x].copy()
-            #frame[y:y+h, x:x+w] = first_pixel
+            result_frame[y:y+h, x:x+w] = cv.blur(result_frame[y:y+h, x:x+w], ((20, 80)))
+
+        return result_frame
+    
+    def eye_blur(self, frame):
+        self.name = "Eye blur effect"
+        eyes = faceDetector.detect_eyes(frame)
+        result_frame = frame.copy()
+
+        for (x,y,h,w) in eyes:    
             result_frame[y:y+h, x:x+w] = cv.blur(result_frame[y:y+h, x:x+w], ((20, 80)))
 
         return result_frame
@@ -63,7 +71,7 @@ class FacialArtifacts:
         return frame
     
     def scan_face(self, frame):
-        faces = faceDetector.detect(frame)
+        faces = faceDetector.detect_face(frame)
         result_frame = frame.copy()
 
         for (x, y, h, w) in faces:
@@ -77,10 +85,23 @@ class FacialArtifacts:
     
     def psychedelic_face_shift(self, frame):
         self.name = "Psychedelic face shift effect"
-        faces = faceDetector.detect(frame)
+        faces = faceDetector.detect_face(frame)
         result_frame = frame.copy()
 
         for (x, y, h, w) in faces:
+            shift_amount = 3 + 5 * np.sin(time.time() - self.start_time * 0.01)
+            result_frame[y:y+h, x:x+w] = result_frame[y:y+h, x:x+w] * shift_amount
+
+            result_frame[y:y+h, x:x+w] = np.roll(result_frame[y:y+h, x:x+w], shift_amount, axis = 1)
+
+        return result_frame
+    
+    def psychedelic_eye_shift(self, frame):
+        self.name = "Psychedelic eye shift effect"
+        eyes = faceDetector.detect_eyes(frame)
+        result_frame = frame.copy()
+
+        for (x, y, h, w) in eyes:
             shift_amount = 3 + 5 * np.sin(time.time() - self.start_time * 0.01)
             result_frame[y:y+h, x:x+w] = result_frame[y:y+h, x:x+w] * shift_amount
 
@@ -98,7 +119,7 @@ class FacialArtifacts:
         return result_frame
     
     def process_current_frame(self, frame, complexity):
-        frame = self.psychedelic_face_shift(frame)
+        frame = self.psychedelic_eye_shift(frame)
 
         return frame
 
