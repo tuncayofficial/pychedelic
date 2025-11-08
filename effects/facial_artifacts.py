@@ -39,6 +39,7 @@ class FacialArtifacts:
         return np.log1p(variance)
 
     def blur(self, frame):
+        self.name = "Blur effect"
         faces = faceDetector.detect(frame)
         result_frame = frame.copy()
 
@@ -75,7 +76,7 @@ class FacialArtifacts:
         return result_frame
     
     def psychedelic_face_shift(self, frame):
-        self.name = "Pixel brightness invertion"
+        self.name = "Psychedelic face shift effect"
         faces = faceDetector.detect(frame)
         result_frame = frame.copy()
 
