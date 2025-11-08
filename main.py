@@ -50,7 +50,7 @@ if hasattr(args, "mode") and args.mode == "rtm":
     realtimeManipulation(args)
 elif hasattr(args, "mode") and args.mode == "render":
     renderVideo(args)
-elif hasattr(args, "webcam") and args.mode == "webcam":
+elif hasattr(args, "mode") and args.mode == "webcam":
     webcamManipulation(args)
 else :
     print("Undefined argument!")
