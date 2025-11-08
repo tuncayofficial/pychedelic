@@ -65,6 +65,30 @@ def hue_shift(self, frame, shift_amount):
         return cv.cvtColor(hsv, cv.COLOR_HSV2BGR)
 ```
 
+### Color Bleeding
+```python
+def _vhs_color_bleeding(self, frame):
+        b, g, r = cv.split(frame)
+        h, w = r.shape
+
+        for i in range(h):
+            shift = 8 + int(np.sin(i * 0.01) * 4)
+            r[i] = np.roll(r[i], shift)
+
+            if shift > 0:
+                r[i, :shift] = r[i, shift] 
+        
+            if i % 3 == 0:
+                shift_b = -6 + int(np.cos(i * 0.02) * 3)
+                b[i] = np.roll(b[i], shift_b)
+
+            if i % 4 == 0:
+                shift_g = 2 + int(np.sin(i * 0.01) * 2)
+                g[i] = np.roll(g[i], shift_g)
+    
+        return cv.merge([b, g, r])
+```
+
 ## Installation
 In order to use the library, you need to clone the repository :
 
