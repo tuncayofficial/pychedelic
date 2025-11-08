@@ -94,10 +94,10 @@ In order to use the library, you need to clone the repository :
 
 ```bash
 # Clone the repository
-git clone https://github.com/tuncayofficial/opencv_video_calibration.git
+git clone https://github.com/tuncayofficial/pychedelic.git
 
 # Navigate to project directory
-cd opencv_video_calibration
+cd pychedelic
 
 # Install dependencies
 pip install -r requirements.txt
@@ -123,7 +123,7 @@ _Render video files with mathematical transformations and export results_
 ![video_2025_11_06_02_15_01](https://github.com/user-attachments/assets/cb2ca4e8-53b9-43b3-a19e-91ae09b55d49)
 
 ## Coming Soon
-• Webcam Support - Live camera feed processing
+• Webcam Support - Live camera feed processing ✅
 
 • More Effects - Expanded mathematical transformations
 
