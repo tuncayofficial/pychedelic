@@ -11,6 +11,7 @@ from processors.render_processor import RenderProcessor
 
 from scripts.renderVideo import renderVideo
 from scripts.realtimeManipulation import realtimeManipulation
+from scripts.webcamManipulation import webcamManipulation
 
 # ---------------------- Argument parser implementation below here ----------------------
 
@@ -44,9 +45,16 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-webcam", "--webcam", 
+    type=str,
+    choices=['enable'], 
+    help="Show webcam with visual artifacts"
+)
+
+parser.add_argument(
     "-effects", "--effects", 
     nargs='+',
-    choices=['Tracker','ColorChaos', 'VHS',"NightVision"], 
+    choices=['Tracker','ColorChaos', 'VHS',"NightVision","FaceBlur"], 
     help="Choose effects to be applied"
 )
 
@@ -56,5 +64,7 @@ if hasattr(args, "realtime") and args.realtime == "enable":
     realtimeManipulation(args)
 elif hasattr(args, "render") and args.render == "enable":
     renderVideo(args)
+elif hasattr(args, "webcam") and args.webcam == "enable":
+    webcamManipulation(args)
 else :
     print("Undefined argument!")

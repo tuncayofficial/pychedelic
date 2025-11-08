@@ -14,7 +14,7 @@ from effects.effect_manager import EffectManager
 
 from processors.render_processor import RenderProcessor
 
-def realtimeManipulation(args):
+def webcamManipulation(args):
     ASSETS_PATH = 'assets/'
 
     # Effects
@@ -24,15 +24,9 @@ def realtimeManipulation(args):
 
     effectManager = EffectManager()
 
-    entries = os.listdir(ASSETS_PATH)
-    files = [entry for entry in entries if os.path.isfile(os.path.join(ASSETS_PATH, entry))]
-    print("Files to be processed in assets folder : " + str(files))
-
     # I/O
-    VIDEO_NAME_IO= str(input("Choose the video to process : "))
-    VIDEO_PATH = ASSETS_PATH + VIDEO_NAME_IO + ".mp4"
 
-    capture = cv.VideoCapture(VIDEO_PATH)
+    capture = cv.VideoCapture(0)
     output_frames = []
     FRAME_ORDER = 0
 

@@ -3,6 +3,14 @@ import numpy as np
 import time
 import math
 import random
+import sys
+import os 
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from processors.face_detection import FateDetector
+
+faceDetector = FateDetector()
 
 class Tracker:
     def __init__(self):
@@ -54,6 +62,7 @@ class Tracker:
         edges_rgb[edges > 0] = [r_channel, g_channel, b_channel]
 
         edges_bgr = cv.cvtColor(edges_rgb, cv.COLOR_RGB2BGR)
+
         return cv.addWeighted(frame, 0.5, edges_bgr, 0.5, 0)
     
     def _simple_frame_effect(self, frame, complexity):

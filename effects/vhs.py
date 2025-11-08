@@ -74,23 +74,10 @@ class VHS:
     
     def _vhs_noise(self, frame):
         h, w = frame.shape[:2]
-        
-        random_height = random.randint(0, h-1)
-        random_width = random.randint(0, w-1)
-
-        radius = random.randint(2, 8)
-
-        # applying the gaussian method from here
-
-        for i in range(max(0, random_height - radius), min(h, random_height+radius)):
-            for j in range(max(0, random_width - radius), min(w, random_width+radius)):
-
-                distance = math.sqrt((i - random_height)**2 + (j - random_width)**2)
-                probability = max(0, 1 - distance/5)
-
-                if random.random() < probability:
-                    frame[i, j] = np.random.randint(0, 128, 3)
-
+    
+        noise_mask = np.random.random((h, w)) < 0.01  # 1% pixels get noise
+        frame[noise_mask] = np.random.randint(0, 128, (np.sum(noise_mask), 3))
+    
         return frame
     
     def _vhs_head_clog(self, frame):
