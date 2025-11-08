@@ -82,14 +82,14 @@ pip install -r requirements.txt
 ## Quick Start
 ### Real-Time Video Processing
 ```bash
-python main.py -rtm enable --effects ColorChaosManipulator
+python main.py -mode rtm --effects ColorChaos
 ```
 _Process video files with live preview and real-time effects!_
 
 
 ### Video Rendering & Export
 ```bash
-python main.py -render enable --effects Calibrator
+python main.py -mode render --effects VHS
 ```
 _Render video files with mathematical transformations and export results_
 
