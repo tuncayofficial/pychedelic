@@ -73,6 +73,8 @@ def renderVideo(args):
                 effectManager.set_effect("night_vision")
             elif "ChromaticAberration" in args.effects:
                 effectManager.set_effect("chromatic_aberration")
+            elif "Grunge" in args.effects:
+                effectManager.set_effect("grunge")
             elif "None" in args.effects:
                 effectManager.set_effect("none")
         else:

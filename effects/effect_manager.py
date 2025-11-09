@@ -10,6 +10,7 @@ from effects.night_vision import NightVision
 from effects.facial_artifacts import FacialArtifacts
 from effects.chromatic_aberration import ChromaticAberration
 from effects.none_effect import NoneEffect
+from effects.grunge import Grunge
 
 class EffectManager:
 
@@ -21,6 +22,7 @@ class EffectManager:
             "night_vision" : NightVision(),
             "facial_artifacts" : FacialArtifacts(),
             "chromatic_aberration" : ChromaticAberration(),
+            "grunge" : Grunge(),
             "none" : NoneEffect()
         }
 

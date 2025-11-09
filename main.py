@@ -42,7 +42,7 @@ parser.add_argument(
     "-effects", "--effects", 
     nargs='+',
     required=True,
-    choices=['Tracker','ColorChaos', 'VHS',"NightVision",'FacialArtifacts','ChromaticAberration','None'], 
+    choices=['Tracker','ColorChaos', 'VHS',"NightVision",'FacialArtifacts','ChromaticAberration','Grunge','None'], 
     help="Chooses effects to be applied"
 )
 
