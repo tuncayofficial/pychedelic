@@ -92,6 +92,15 @@ class Grunge:
         
         return frame
     
+    def burnify(self, frame):
+        b, g, r = cv.split(frame)
+
+        b_manipulated = np.where(b < 128, np.clip(5 * np.sin((time.time() - self.start_time) * 0.05), 0, 100), np.clip(5 * np.cos((time.time() - self.start_time) * 0.05), 155, 255))
+        g_manipulated = np.where(g < 128, np.clip(5 * np.sin((time.time() - self.start_time) * 0.05), 0, 100), np.clip(5 * np.cos((time.time() - self.start_time) * 0.05), 155, 255))
+        r_manipulated = np.where(r < 128, np.clip(5 * np.sin((time.time() - self.start_time) * 0.05), 0, 100), np.clip(5 * np.cos((time.time() - self.start_time) * 0.05), 155, 255))
+
+        return cv.merge([b_manipulated.astype(np.uint8), g_manipulated.astype(np.uint8), r_manipulated.astype(np.uint8)])
+    
     def grunge_master(self, frame):
         frame = self.grunge_bleach_bypass(frame)
         frame = self.washed_emo_layers(frame)
