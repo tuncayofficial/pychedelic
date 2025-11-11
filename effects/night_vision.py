@@ -37,11 +37,11 @@ class NightVision:
                 
             return frame 
         if complexity > self.threshold:
-            return self._apply_night_vision(frame)
+            return self.apply_night_vision(frame)
         else:
-            return self._apply_night_vision(frame)
+            return self.apply_night_vision(frame)
 
-    def _night_vision_overlay(self, frame):
+    def night_vision_overlay(self, frame):
         gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         gray = cv.GaussianBlur(gray, (3, 3), 0)
         gray = cv.equalizeHist(gray)
@@ -64,7 +64,7 @@ class NightVision:
 
         return night_vision
     
-    def _scan_lines(self, frame):
+    def night_vision_scan_lines(self, frame):
         result_frame = frame.copy().astype(np.float32)
 
         result_frame[::3, :, 0] *= 1.5
@@ -72,7 +72,7 @@ class NightVision:
         
         return np.clip(result_frame.astype(np.uint8), 0, 255)
     
-    def _barrel_distortion(self, frame, intensity):
+    def night_vision_barrel_distortion(self, frame, intensity):
         h, w = frame.shape[:2]
 
         j, i = np.meshgrid(np.arange(w), np.arange(h))
@@ -91,7 +91,7 @@ class NightVision:
 
         return cv.remap(frame, map_x.astype(np.float32), map_y.astype(np.float32), cv.INTER_LINEAR)
     
-    def _apply_night_vision(self, frame):
+    def apply_night_vision(self, frame):
         frame = self._night_vision_overlay(frame)
         frame = self._barrel_distortion(frame, 0.1)
         #frame = self._scan_lines(frame)

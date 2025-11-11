@@ -38,7 +38,7 @@ class FacialArtifacts:
 
         return np.log1p(variance)
 
-    def face_blur(self, frame):
+    def blur_face(self, frame):
         self.name = "Face blur effect"
         faces = faceDetector.detect_face(frame)
         result_frame = frame.copy()
@@ -48,7 +48,7 @@ class FacialArtifacts:
 
         return result_frame
     
-    def eye_blur(self, frame):
+    def blur_eye(self, frame):
         self.name = "Eye blur effect"
         eyes = faceDetector.detect_eyes(frame)
         result_frame = frame.copy()
@@ -119,7 +119,10 @@ class FacialArtifacts:
         return result_frame
     
     def process_current_frame(self, frame, complexity):
+        frame = self.blur_face(frame)
+        frame = self.blur_eye(frame)
         frame = self.psychedelic_face_shift(frame)
+        frame = self.psychedelic_eye_shift(frame)
 
         return frame
 

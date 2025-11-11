@@ -40,16 +40,16 @@ class VHS:
             return frame 
         
         
-        frame = self._barrel_distortion(frame, 0.1)
+        frame = self.vhs_barrel_distortion(frame, 0.1)
            
         if complexity > self.threshold:
-            return self._apply_vhs_complex(frame)
+            return self.apply_vhs_complex(frame)
         else:
-            return self._apply_vhs_simple(frame)
+            return self.apply_vhs_simple(frame)
         
     # <-------------------- VHS Scan Lines -------------------->
 
-    def _vhs_scan_lines(self, frame):
+    def vhs_scan_lines(self, frame):
         dark_lines = frame[::3, :] * 0.2
         dark_lines[:, :, 0] = dark_lines[:, :, 0] * 1.5
         frame[::3, :] = dark_lines
@@ -57,7 +57,7 @@ class VHS:
     
     # <-------------------- VHS Color Bleeding -------------------->
 
-    def _vhs_color_bleeding(self, frame):
+    def vhs_color_bleeding(self, frame):
         b, g, r = cv.split(frame)
         h, w = r.shape
 
@@ -80,7 +80,7 @@ class VHS:
     
     # <-------------------- VHS Noise -------------------->
     
-    def _vhs_noise(self, frame):
+    def vhs_noise(self, frame):
         h, w = frame.shape[:2]
     
         noise_mask = np.random.random((h, w)) < 0.01  # 1% pixels get noise
@@ -90,7 +90,7 @@ class VHS:
     
     # <-------------------- VHS Head Clog -------------------->
     
-    def _vhs_head_clog(self, frame):
+    def vhs_head_clog(self, frame):
         current_index = len(self.processed_frames)
     
         if current_index > 0 and random.random() < 0.8:
@@ -103,7 +103,7 @@ class VHS:
     
     # <-------------------- VHS Tape Damage -------------------->
     
-    def _vhs_tape_damage(self, frame):
+    def vhs_tape_damage(self, frame):
         h, w = frame.shape[:2]
     
         for _ in range(random.randint(1, 5)):
@@ -119,7 +119,7 @@ class VHS:
     
     # <-------------------- VHS Tape Glitch -------------------->
     
-    def _vhs_tape_glitch(self, frame):
+    def vhs_tape_glitch(self, frame):
         h, w = frame.shape[:2]
     
         glitch_x = random.randint(0, w-50)      
@@ -137,7 +137,7 @@ class VHS:
     
     # <-------------------- VHS Barrel Distortion -------------------->
     
-    def _barrel_distortion(self, frame, intensity):
+    def vhs_barrel_distortion(self, frame, intensity=0.1):
         h, w = frame.shape[:2]
 
         j, i = np.meshgrid(np.arange(w), np.arange(h))
@@ -158,23 +158,23 @@ class VHS:
     
     # <-------------------- Dynamic Threshold Functions -------------------->
 
-    def _apply_vhs_complex(self, frame):
-        frame = self._vhs_scan_lines(frame)
-        frame = self._vhs_color_bleeding(frame)
-        frame = self._vhs_head_clog(frame)
+    def apply_vhs_complex(self, frame):
+        frame = self.vhs_scan_lines(frame)
+        frame = self.vhs_color_bleeding(frame)
+        frame = self.vhs_head_clog(frame)
 
         if random.random() < 0.000000000000005:
-            frame = self._vhs_tape_damage(frame)
-            frame = self._vhs_tape_glitch(frame)
+            frame = self.vhs_tape_damage(frame)
+            frame = self.vhs_tape_glitch(frame)
 
         return frame
 
-    def _apply_vhs_simple(self, frame):
-        frame = self._vhs_scan_lines(frame)
-        frame = self._vhs_color_bleeding(frame)
+    def apply_vhs_simple(self, frame):
+        frame = self.vhs_scan_lines(frame)
+        frame = self.vhs_color_bleeding(frame)
 
         if random.random() < 0.00000000001:
-            frame = self._vhs_tape_damage(frame)
-            frame = self._vhs_tape_glitch(frame)
+            frame = self.vhs_tape_damage(frame)
+            frame = self.vhs_tape_glitch(frame)
         
         return frame  

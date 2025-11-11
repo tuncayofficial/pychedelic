@@ -69,19 +69,19 @@ class ColorChaosManipulator:
 
         match effect_type:
             case "channel_swap":
-                return self._channel_swap(frame)
+                return self.channel_swap(frame)
             case "color_blast":
-                return self._color_blast(frame, complexity)
+                return self.color_blast(frame, complexity)
             case "psychedelic_master":
-                return self._psychedelic_master(frame, time.time() - self.start_time)
+                return self.psychedelic_master(frame, time.time() - self.start_time)
     
-    def _channel_swap(self, frame):
+    def channel_swap(self, frame):
         b, g, r = cv.split(frame)
         channels = [b, g, r]
         random.shuffle(channels)
         return cv.merge(channels) 
     
-    def _color_blast(self, frame, complexity):
+    def color_blast(self, frame, complexity):
         intensity = min(0.3, complexity / (self.threshold * 8))
     
         color = np.array([random.randint(0, 255) for _ in range(3)], dtype=np.uint8)
@@ -92,7 +92,9 @@ class ColorChaosManipulator:
 
     # ------------------- Defining Psychedelic concepts from here ------------------- 
 
-    def hue_shift(self, frame, shift_amount):
+    def hue_shift(self, frame):
+        shift_amount = int(math.sin(time.time() - self.start_time * 0.1) * 30)
+
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
         hue_channel = hsv[:, :, 0]
@@ -126,7 +128,7 @@ class ColorChaosManipulator:
 
         return cv.merge([b_shifted, g_shifted, r_shifted])
     
-    def _channel_shifting(self, frame):
+    def channel_shifting(self, frame):
         b, g, r = cv.split(frame)
         h, w = r.shape
 
@@ -163,11 +165,10 @@ class ColorChaosManipulator:
             result[mask == 255] = rotated[mask == 255]
         return result
     
-    def _psychedelic_master(self, frame, time_counter):
+    def psychedelic_master(self, frame, time_counter):
         result = frame.copy()
 
-        shift_amount = int(math.sin(time_counter * 0.1) * 30)
-        result = self.hue_shift(result, shift_amount) 
+        result = self.hue_shift(result) 
         
         wave_strength = 5 + 3 * math.sin(time_counter * 0.03) 
         result = self.sine_distortion(result, time_counter * 0.5)
