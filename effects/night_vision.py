@@ -92,8 +92,8 @@ class NightVision:
         return cv.remap(frame, map_x.astype(np.float32), map_y.astype(np.float32), cv.INTER_LINEAR)
     
     def apply_night_vision(self, frame):
-        frame = self._night_vision_overlay(frame)
-        frame = self._barrel_distortion(frame, 0.1)
+        frame = self.night_vision_overlay(frame)
+        frame = self.night_vision_barrel_distortion(frame, 0.1)
         #frame = self._scan_lines(frame)
 
         return frame

@@ -142,7 +142,7 @@ class FacialArtifacts:
                     continue   
                 img_resized = cv.resize(img, (w, h))
 
-                region = result_frame[y:y+h, x:x+w]
+                region = result_frame[y:y+h+10, x:x+w]
                 blended_region = cv.addWeighted(region, 0, img_resized, 1, 0)
 
                 result_frame[y:y+h, x:x+w] = blended_region
