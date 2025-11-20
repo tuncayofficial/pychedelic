@@ -116,7 +116,12 @@ class FacialArtifacts:
         result_frame = frame.copy()
 
         for (x,y,h,w) in faces:     
+            text_x = x + w // 2
+            text_y = y - 10
+
             cv.rectangle(result_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv.putText(result_frame, "Human", (text_x, text_y), 
+                cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
 
         return result_frame
     
